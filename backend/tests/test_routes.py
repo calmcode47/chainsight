@@ -20,18 +20,24 @@ async def test_get_shipments(client):
         mock_get.return_value = [
             {
                 "id": "SHP-TEST",
-                "origin_city": "London",
-                "destination_city": "New York",
+                "origin": {
+                    "city": "London",
+                    "country": "UK",
+                    "lat": 51.5,
+                    "lng": -0.1,
+                },
+                "destination": {
+                    "city": "New York",
+                    "country": "USA",
+                    "lat": 40.7,
+                    "lng": -74.0,
+                },
                 "status": "on_time",
                 "carrier": "Maersk",
                 "mode": "sea",
                 "eta": "2026-05-01",
                 "delay_hours": 0,
                 "progress_percent": 50,
-                "origin_lat": 0,
-                "origin_lng": 0,
-                "destination_lat": 34.05,
-                "destination_lng": -118.24,
                 "route_nodes": [],
             }
         ]
@@ -80,7 +86,14 @@ async def test_optimize_route(client):
     ) as mock_ship:
         mock_ship.return_value = {
             "id": "SHP-123",
+            "origin": {"city": "A", "country": "B", "lat": 0, "lng": 0},
+            "destination": {"city": "C", "country": "D", "lat": 0, "lng": 0},
             "status": "delayed",
+            "carrier": "Test Carrier",
+            "mode": "air",
+            "eta": "2026-05-01",
+            "progress_percent": 10,
+            "delay_hours": 5,
             "route_nodes": [],
         }
 
