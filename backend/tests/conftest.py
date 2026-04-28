@@ -3,7 +3,7 @@ import asyncio
 import sys
 import os
 import pytest_asyncio
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from typing import AsyncGenerator
 
 # Ensure backend directory is in PYTHONPATH
@@ -21,5 +21,6 @@ def event_loop():
 
 @pytest_asyncio.fixture
 async def client() -> AsyncGenerator:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
