@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from models.schemas import Shipment, SupplyChainMetrics
 from services.db_service import db_service as db
+from middleware.auth import require_auth
 
 router = APIRouter()
 
