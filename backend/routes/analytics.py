@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Query, Depends
-from typing import List, Dict, Any, Optional
 from services.db_service import DBService
 from middleware.auth import require_auth
 from datetime import datetime, timedelta

@@ -1,6 +1,5 @@
 from .db_service import DBService
 from .mock_data import MockDataService
-import json
 
 
 def flatten_shipment(s: dict) -> dict:

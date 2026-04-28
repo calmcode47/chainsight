@@ -1,12 +1,10 @@
-from typing import List, Dict, Optional, Any
+from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import HTTPException
 from postgrest.exceptions import APIError
 from .supabase_client import get_supabase
 from .mock_data import mock_service
-from models.schemas import Shipment
 import anyio
-import random
 
 
 def now_iso() -> str:

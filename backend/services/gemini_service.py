@@ -1,7 +1,7 @@
 import os
 import json
 import google.generativeai as genai
-from typing import List, Dict, Optional
+from typing import List
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -126,7 +126,7 @@ class GeminiService:
                 "free_tier",
             ]
             if any(indicator in error_str for indicator in quota_indicators):
-                print(f"⚠️ Gemini Quota Exceeded. Switching to Heuristic Mode.")
+                print("⚠️ Gemini Quota Exceeded. Switching to Heuristic Mode.")
                 return self._get_heuristic_answer(question, context)
 
             # For other errors, still try to provide a heuristic answer if possible
@@ -152,15 +152,24 @@ class GeminiService:
 
         if "delay" in q or "delayed" in q:
             count = metrics.get("delayed", 0)
-            return f"I'm currently tracking {count} shipments with active delays. You can view the specific bottlenecks in the 'Critical Shipment Monitor' on your dashboard."
+            return (
+                f"I'm currently tracking {count} shipments with active delays. You can view the "
+                "specific bottlenecks in the 'Critical Shipment Monitor' on your dashboard."
+            )
 
         if "risk" in q or "critical" in q:
             count = metrics.get("critical", 0)
-            return f"Operational Alert: We have {count} shipments in 'Critical' status requiring immediate intervention. I recommend checking the Optimizer page for rerouting strategies."
+            return (
+                f"Operational Alert: We have {count} shipments in 'Critical' status requiring "
+                "immediate intervention. I recommend checking the Optimizer page for rerouting strategies."
+            )
 
         if "save" in q or "cost" in q:
             saved = metrics.get("cost_saved_usd", 0)
-            return f"Our analytics show a total cost saving of ${saved:,.2f} for the current period, achieved through AI-driven route optimizations."
+            return (
+                f"Our analytics show a total cost saving of ${saved:,.2f} for the current period, "
+                "achieved through AI-driven route optimizations."
+            )
 
         # Default Data-Driven Response
         total = metrics.get("total_shipments", 0)
@@ -216,7 +225,10 @@ class GeminiService:
             "cost_delta_usd": 1500.0,
             "risk_reduction_percent": 35,
             "recommended_carrier": carrier,
-            "gemini_reasoning": f"Optimizing path for {carrier} fleet by bypassing current regional bottlenecks. Identified a high-liquidity transit window for this specific route.",
+            "gemini_reasoning": (
+                f"Optimizing path for {carrier} fleet by bypassing current regional bottlenecks. "
+                "Identified a high-liquidity transit window for this specific route."
+            ),
         }
 
 

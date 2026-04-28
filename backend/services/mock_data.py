@@ -1,7 +1,7 @@
 # INTERNAL USE ONLY — used by SeedService for database seeding. Not imported by routes.
 import random
 
-from typing import List, Optional
+from typing import List
 from datetime import datetime, timedelta
 from faker import Faker
 from models.schemas import GeoPoint, Shipment, DisruptionAlert, SupplyChainMetrics

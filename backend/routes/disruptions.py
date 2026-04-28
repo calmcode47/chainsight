@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from models.schemas import DisruptionAlert
 from services.db_service import DBService
 from services.gemini_service import gemini_service

@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Dict, Any
 from services.db_service import DBService
 from services.gemini_service import gemini_service
-from services.seed_service import SeedService
 from middleware.auth import require_demo_key
 from datetime import datetime
 import random
@@ -31,7 +29,10 @@ async def trigger_demo_alert(authorized: bool = Depends(require_demo_key)):
         "shipment_id": target["id"],
         "severity": "critical",
         "type": "Port Strike",
-        "description": f"URGENT: Port authorities at {target.get('destination_city')} have declared a full strike. Shipment halted immediately.",
+        "description": (
+            f"URGENT: Port authorities at {target.get('destination_city')} "
+            "have declared a full strike. Shipment halted immediately."
+        ),
         "detected_at": datetime.now().isoformat(),
         "predicted_delay_hours": 72,
         "affected_region": target.get("destination_country"),
