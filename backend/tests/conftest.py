@@ -1,8 +1,14 @@
 import pytest
 import asyncio
+import sys
+import os
 from httpx import AsyncClient
-from main import app
 from typing import AsyncGenerator
+
+# Ensure backend directory is in PYTHONPATH
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from main import app
 
 
 @pytest.fixture(scope="session")
