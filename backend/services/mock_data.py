@@ -236,13 +236,16 @@ class MockDataService:
             }
 
             storm_types = ["typhoon", "cyclone", "blizzard", "high-wind"]
+            loc = (
+                shp.current_location.city
+                if shp.current_location.city != "In Transit"
+                else shp.destination.city
+            )
             desc = desc_templates.get(
                 shp.disruption_type, "Unforeseen disruption at {loc}."
             ).format(
                 storm_type=random.choice(storm_types),
-                loc=shp.current_location.city
-                if shp.current_location.city != "In Transit"
-                else shp.destination.city,
+                loc=loc,
                 hours=shp.delay_hours,
                 carrier=shp.carrier,
                 id=shp.id,
