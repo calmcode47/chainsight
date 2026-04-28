@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Query, Depends
-from services.db_service import DBService
+from services.db_service import db_service as db
 from middleware.auth import require_auth
 from datetime import datetime, timedelta
 
 router = APIRouter()
-db = DBService()
 
 
 @router.get("/metrics-history")

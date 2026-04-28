@@ -1,14 +1,13 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from models.schemas import DisruptionAlert
-from services.db_service import DBService
+from services.db_service import db_service as db
 from services.gemini_service import gemini_service
 from middleware.auth import require_auth
 import time
 import random
 
 router = APIRouter()
-db = DBService()
 
 
 @router.get("", response_model=List[DisruptionAlert])

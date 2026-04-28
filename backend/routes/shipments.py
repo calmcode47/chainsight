@@ -1,12 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from models.schemas import Shipment, SupplyChainMetrics
-from services.db_service import DBService
-from middleware.auth import require_auth
+from services.db_service import db_service as db
 
 router = APIRouter()
-db = DBService()
-
 
 @router.get("/shipments", response_model=List[Shipment])
 async def get_all_shipments(

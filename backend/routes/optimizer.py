@@ -1,13 +1,12 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import List, Dict, Any
 from models.schemas import RouteRecommendation
-from services.db_service import DBService
+from services.db_service import db_service as db
 from services.gemini_service import gemini_service
 from middleware.auth import require_auth
 import time
 
 router = APIRouter()
-db = DBService()
 
 
 @router.post("/{shipment_id}", response_model=RouteRecommendation)

@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
+from fastapi import HTTPException
 
 
 @pytest.mark.asyncio
@@ -13,7 +14,6 @@ async def test_health_endpoint(client):
 
 @pytest.mark.asyncio
 async def test_get_shipments(client):
-    # Mock DBService to return at least one shipment
     with patch(
         "services.db_service.db_service.get_all_shipments", new_callable=AsyncMock
     ) as mock_get:
@@ -30,8 +30,8 @@ async def test_get_shipments(client):
                 "progress_percent": 50,
                 "origin_lat": 0,
                 "origin_lng": 0,
-                "destination_lat": 0,
-                "destination_lng": 0,
+                "destination_lat": 34.05,
+                "destination_lng": -118.24,
                 "route_nodes": [],
             }
         ]
@@ -54,8 +54,8 @@ async def test_get_metrics(client):
             "delayed": 5,
             "critical": 5,
             "avg_delay_hours": 2.5,
-            "disruptions_detected": 3,
-            "routes_optimized": 12,
+            "disruptions_detected_today": 3,
+            "routes_optimized_today": 12,
             "cost_saved_usd": 4500,
         }
         response = await client.get("/api/metrics")
@@ -68,41 +68,42 @@ async def test_get_shipment_not_found(client):
     with patch(
         "services.db_service.db_service.get_shipment_by_id", new_callable=AsyncMock
     ) as mock_get:
-        mock_get.return_value = None
+        mock_get.side_effect = HTTPException(status_code=404, detail="Not found")
         response = await client.get("/api/shipments/INVALID")
         assert response.status_code == 404
 
 
 @pytest.mark.asyncio
 async def test_optimize_route(client):
-    # Mock shipment fetch
     with patch(
         "services.db_service.db_service.get_shipment_by_id", new_callable=AsyncMock
     ) as mock_ship:
-        mock_ship.return_value = {"id": "SHP-123", "status": "delayed"}
+        mock_ship.return_value = {
+            "id": "SHP-123",
+            "status": "delayed",
+            "route_nodes": [],
+        }
 
-        # Mock Gemini call
         with patch(
             "services.gemini_service.gemini_service.optimize_route",
             new_callable=AsyncMock,
         ) as mock_gemini:
             mock_gemini.return_value = {
-                "original_route": {"nodes": []},
-                "recommended_route": {"nodes": []},
-                "metrics": {
-                    "time_saving_hours": 5,
-                    "cost_delta_usd": -200,
-                    "risk_reduction_pct": 20,
-                },
-                "carrier_recommendation": "Mock Carrier",
-                "reasoning": "Mock Reasoning",
+                "alternative_route": [],
+                "time_saving_hours": 5,
+                "cost_delta_usd": -200,
+                "risk_reduction_percent": 20,
+                "recommended_carrier": "Mock Carrier",
+                "gemini_reasoning": "Mock Reasoning",
             }
 
-            # Mock DB save
             with patch(
                 "services.db_service.db_service.save_optimization",
                 new_callable=AsyncMock,
             ):
-                response = await client.post("/api/optimizer/SHP-123")
-                assert response.status_code == 200
-                assert "recommended_route" in response.json()
+                with patch(
+                    "services.db_service.db_service.log_ai_call", new_callable=AsyncMock
+                ):
+                    response = await client.post("/api/optimizer/SHP-123")
+                    assert response.status_code == 200
+                    assert "alternative_route" in response.json()
