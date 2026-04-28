@@ -5,6 +5,7 @@ from services.db_service import db_service as db
 
 router = APIRouter()
 
+
 @router.get("/shipments", response_model=List[Shipment])
 async def get_all_shipments(
     status: Optional[str] = Query(
