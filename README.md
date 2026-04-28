@@ -60,7 +60,7 @@ ChainSight leverages **Gemini 1.5 Flash** to autonomously detect risk patterns a
 | **Database** | Supabase (PostgreSQL) + Realtime Subscriptions |
 | **AI Engine** | Google Gemini 1.5 Flash (via Generative AI SDK) |
 | **CI/CD** | GitHub Actions (Linting, Testing, Building) |
-| **Hosting** | Vercel (Frontend), Railway (Backend) |
+| **Hosting** | Firebase (Frontend), Google Cloud Run (Backend) |
 
 ---
 
@@ -96,13 +96,13 @@ npm run dev
 
 ## 🚢 Deployment Guide
 
-### Railway (Backend)
+### Google Cloud Run (Backend)
 1. Create a new Project on Railway.
 2. Connect your GitHub repository and select the `backend` directory as root.
 3. Add the following Environment Variables:
    - `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `GEMINI_API_KEY`, `FRONTEND_URL`, `RAILWAY_ENVIRONMENT=production`
 
-### Vercel (Frontend)
+### Firebase (Frontend)
 1. Create a new Project on Vercel.
 2. Connect your GitHub repository and select the `frontend` directory as root.
 3. Add the following Environment Variable:
