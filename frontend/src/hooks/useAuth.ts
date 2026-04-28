@@ -17,10 +17,7 @@ const useAuth = () => {
       
       // Failsafe timeout: if auth takes > 5s, stop loading so we don't stay blank
       const timeoutId = setTimeout(() => {
-        if (loading) {
-          console.warn('⚠️ [Auth] Initialization timed out. Forcing loading to false.');
-          setLoading(false);
-        }
+        setLoading(false);
       }, 5000);
 
       try {

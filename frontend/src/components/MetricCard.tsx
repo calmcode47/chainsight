@@ -22,13 +22,13 @@ const MetricCard: React.FC<MetricCardProps> = ({
   const numericValue = typeof value === 'number' ? value : parseFloat(value.toString().replace(/[^0-9.-]+/g, ""));
 
   useEffect(() => {
-    let start = 0;
+    const start = 0;
     const end = isNaN(numericValue) ? 0 : numericValue;
     if (start === end) return;
 
-    let totalDuration = 1000;
-    let frameDuration = 1000 / 60;
-    let totalFrames = Math.round(totalDuration / frameDuration);
+    const totalDuration = 1000;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(totalDuration / frameDuration);
     let counter = 0;
 
     const timer = setInterval(() => {
