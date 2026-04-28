@@ -221,10 +221,18 @@ class MockDataService:
                 severity = "medium"
 
             desc_templates = {
-                "weather": "Severe {storm_type} system detected near {loc} affecting maritime routes.",
-                "port_congestion": "Increased vessel dwell times at {loc} causing backlog of {hours}h.",
-                "customs": "New regulatory audits at {loc} customs clearance causing processing delays.",
-                "mechanical": "Carrier {carrier} reports technical issues with vessel serving shipment {id}.",
+                "weather": (
+                    "Severe {storm_type} system detected near {loc} affecting maritime routes."
+                ),
+                "port_congestion": (
+                    "Increased vessel dwell times at {loc} causing backlog of {hours}h."
+                ),
+                "customs": (
+                    "New regulatory audits at {loc} customs clearance causing processing delays."
+                ),
+                "mechanical": (
+                    "Carrier {carrier} reports technical issues with vessel serving shipment {id}."
+                ),
             }
 
             storm_types = ["typhoon", "cyclone", "blizzard", "high-wind"]
