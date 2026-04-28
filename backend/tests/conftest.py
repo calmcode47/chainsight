@@ -2,6 +2,7 @@ import pytest
 import asyncio
 import sys
 import os
+import pytest_asyncio
 from httpx import AsyncClient
 from typing import AsyncGenerator
 
@@ -18,7 +19,7 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client() -> AsyncGenerator:
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
