@@ -75,7 +75,12 @@ class MockDataService:
                 "lat": 35.6762,
                 "lng": 139.6503,
             },
-            "dest": {"city": "London", "country": "UK", "lat": 51.5074, "lng": -0.1278},
+            "dest": {
+                "city": "London",
+                "country": "UK",
+                "lat": 51.5074,
+                "lng": -0.1278,
+            },
         },
         {
             "origin": {
