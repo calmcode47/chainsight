@@ -12,12 +12,15 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from main import app
 from middleware.auth import require_auth, require_demo_key
 
+
 # Global Auth Bypass for Testing
 async def bypass_auth():
     return {"sub": "test-user", "email": "test@example.com"}
 
+
 async def bypass_demo_key():
     return True
+
 
 app.dependency_overrides[require_auth] = bypass_auth
 app.dependency_overrides[require_demo_key] = bypass_demo_key
