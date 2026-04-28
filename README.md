@@ -1,109 +1,128 @@
-# ChainSight — AI-Powered Supply Chain Disruption Intelligence
+# ChainSight — AI-Powered Supply Chain Intelligence 🛰️
 
-![React](https://img.shields.io/badge/Frontend-React%2018-blue?style=flat-square&logo=react)
-![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi)
-![Gemini AI](https://img.shields.io/badge/AI-Google%20Gemini%201.5-4285F4?style=flat-square&logo=google-gemini)
-![Hackathon](https://img.shields.io/badge/Hackathon-Build%20with%20AI%202026-FFD700?style=flat-square)
-![Team](https://img.shields.io/badge/Team-Prompt%20Warrior-red?style=flat-square)
+> **Real-time disruption detection and autonomous route optimization powered by Google Gemini 1.5 Flash.**
 
-## 📌 Problem Statement
-Global supply chains are increasingly vulnerable to unpredictable disruptions like port congestion, extreme weather, and geopolitical shifts. Traditional tracking systems are reactive, leaving logistics managers to deal with cascading delays and rising costs after a bottleneck has already formed.
+[![React](https://img.shields.io/badge/Frontend-React%2018-blue)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-green)](https://fastapi.tiangolo.com/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase-emerald)](https://supabase.com/)
+[![Gemini AI](https://img.shields.io/badge/AI-Gemini%201.5%20Flash-orange)](https://deepmind.google/technologies/gemini/)
+[![Firebase](https://img.shields.io/badge/Deploy-Firebase-yellow)](https://firebase.google.com/)
+[![GCP](https://img.shields.io/badge/Deploy-Cloud%20Run-blue)](https://cloud.google.com/run)
 
-## 🚀 Solution Overview
-ChainSight is a production-ready intelligence platform that transforms supply chain management from reactive to proactive. By combining real-time data ingestion with **Google Gemini 1.5 Flash**, the platform detects disruption patterns early, predicts their impact on specific shipments, and generates optimized alternate routes with natural language reasoning. ChainSight provides a "command center" experience that enables managers to resolve complex logistics crises in seconds rather than days.
+## 🔗 Live Demo & Links
+- **Production URL:** [https://projects-a1f07.web.app](https://projects-a1f07.web.app)
+- **Backend API:** [https://chainsight-backend-783471324229.asia-south1.run.app/health](https://chainsight-backend-783471324229.asia-south1.run.app/health)
+- **API Docs:** [https://chainsight-backend-783471324229.asia-south1.run.app/docs](https://chainsight-backend-783471324229.asia-south1.run.app/docs)
 
-## ✨ Key Features
-- 🔴 **Real-time Disruption Detection**: Automated scanning of global fleet data with severity scoring (Critical to Low).
-- 🧠 **Gemini AI Route Optimization**: Dynamic reroute recommendations with structured comparison of time, cost, and risk metrics.
-- 🗺️ **Live World Map**: Stylized high-tech visualization with animated route flows and pulsing location nodes.
-- 💬 **AI Command Assistant**: A natural language chat interface to query fleet health and performance metrics instantly.
-- 📊 **Intelligent KPI Dashboard**: Real-time monitoring of "Cost Saved Today," "On-Time %," and "Active Risks."
-- ⚡ **Batch Recovery**: Single-click computational pass to optimize all at-risk shipments simultaneously.
+## 📊 Project Status (v1.2)
+- ✅ **Production Live**: Frontend deployed on Firebase, Backend on Google Cloud Run.
+- ✅ **AI Fault Tolerance**: Implemented a "Smart Heuristic" fallback engine to ensure the Assistant remains functional during Gemini API quota exhaustion.
+- ✅ **Guest Mode**: Demonstration access enabled for judges via "Enter as Guest" on the login page.
+
+---
+
+## 🛑 The Problem
+Modern supply chains are vulnerable to unpredictable disruptions—weather, port strikes, and infrastructure failures. Manual monitoring is slow, error-prone, and reactive, leading to millions in lost revenue and increased carbon footprints due to inefficient re-routing.
+
+## ✅ The Solution
+ChainSight leverages **Gemini 1.5 Flash** to autonomously detect risk patterns across global shipments. It provides real-time visibility through a high-performance React dashboard and recommends optimized alternative routes that balance time, cost, and risk reduction.
+
+---
 
 ## 🏗️ Architecture
 ```text
-┌────────────────┐      ┌───────────────────────────┐      ┌───────────────────────┐
-│  React Frontend│ ────▶│      FastAPI Backend      │ ────▶│   Google Gemini AI    │
-│ (Vite + TS)    │      │ (Business Logic & Routes) │      │  (Analysis & Reason)  │
-└────────────────┘      └─────────────┬─────────────┘      └───────────────────────┘
-                                      │
-                                      ▼
-                        ┌───────────────────────────┐
-                        │     Mock Data Engine      │
-                        │ (Deterministic Simulation)│
-                        └───────────────────────────┘
+[ Global Shipments ] --> [ Supabase (PostgreSQL) ] <--> [ FastAPI Backend ]
+                                  ^                         |
+                                  |                         v
+[ Live Notifications ] <--- [ Real-time Sub ] <--- [ Gemini 1.5 AI Service ]
+                                  |                         |
+                                  v                         v
+                          [ React Frontend ] <---- [ Recharts Analytics ]
 ```
 
-## 🛠️ Tech Stack
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts |
-| **Backend** | Python 3.11, FastAPI, Pydantic v2, Uvicorn |
-| **AI/ML** | Google Gemini 1.5 Flash (via `google-generativeai` SDK) |
-| **State/Data** | React Hooks, Axios, Deterministic Mock Engine |
+---
 
-## ⚙️ Setup Instructions
+## ✨ Key Features
+- 🔴 **Real-Time Disruption Detection**: Event-driven alerts with severity scoring.
+- 🗺️ **Interactive Logistics Map**: Live tracking with animated shipment vectors.
+- 🧠 **AI Route Optimization**: Alternative route generation with natural language reasoning.
+- 📊 **Historical Analytics**: 7-day trend analysis for supply chain health and efficiency.
+- 💬 **Supply Chain Assistant**: Natural language query interface for inventory and logistics status.
+- ⚡ **Autonomous Simulation**: Background workers simulate real-world disruptions for demo resilience.
+
+---
+
+## 🛠️ Tech Stack
+| Component | Technology |
+| :--- | :--- |
+| **Frontend** | React 18, TypeScript, Tailwind CSS, Recharts, Lucide |
+| **Backend** | Python 3.11, FastAPI, Pydantic v2, Uvicorn |
+| **Database** | Supabase (PostgreSQL) + Realtime Subscriptions |
+| **AI Engine** | Google Gemini 1.5 Flash (via Generative AI SDK) |
+| **CI/CD** | GitHub Actions (Linting, Testing, Building) |
+| **Hosting** | Vercel (Frontend), Railway (Backend) |
+
+---
+
+## 🚀 Local Development
 
 ### Prerequisites
 - Python 3.11+
-- Node.js 18+
-- [Google AI Studio API Key](https://aistudio.google.com/app/apikey) (Gemini API)
+- Node.js 20+
+- Supabase Project
+- Gemini API Key
 
-### Backend Setup
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Mac/Linux
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Create a `.env` file and add your Gemini API Key:
-   ```env
-   GEMINI_API_KEY=your_api_key_here
-   PORT=8000
-   ```
-5. Start the server:
-   ```bash
-   python main.py
-   ```
+### 1. Backend Setup
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your credentials
+python main.py
+```
 
-### Frontend Setup
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+cp .env.example .env.development
+# Edit .env.development
+npm run dev
+```
 
-## 📡 API Documentation
+---
 
-| Method | Route | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/shipments` | Retrieve all shipments with current status and metrics. |
-| `GET` | `/api/metrics` | Fetch global supply chain performance KPIs. |
-| `GET` | `/api/disruptions` | List all active disruption alerts detected by the system. |
-| `POST` | `/api/disruptions/analyze` | Trigger Gemini AI to identify top 5 risks across the fleet. |
-| `POST` | `/api/optimizer/{id}` | Generate a Gemini-optimized alternate route for a specific shipment. |
-| `POST` | `/api/assistant/chat` | Query the AI assistant with natural language context. |
-| `WS` | `/ws/alerts` | Real-time WebSocket feed for live disruption updates. |
+## 🚢 Deployment Guide
 
-## 📸 Screenshots
-Visual demonstrations of the Dashboard, Optimizer, and AI Assistant are available in the `/demo` folder.
+### Railway (Backend)
+1. Create a new Project on Railway.
+2. Connect your GitHub repository and select the `backend` directory as root.
+3. Add the following Environment Variables:
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `GEMINI_API_KEY`, `FRONTEND_URL`, `RAILWAY_ENVIRONMENT=production`
 
-## 👥 Team: Prompt Warrior
-- **Mayank Joshi** — Lead Full-Stack & AI Engineer
+### Vercel (Frontend)
+1. Create a new Project on Vercel.
+2. Connect your GitHub repository and select the `frontend` directory as root.
+3. Add the following Environment Variable:
+   - `VITE_API_BASE_URL` (Pointing to your Railway URL + /api)
+   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
 
-## 📄 License
-This project is licensed under the MIT License.
+---
+
+## 🧪 Testing
+```bash
+cd backend
+pytest tests/ -v
+```
+
+---
+
+## 👥 Team
+**Team Prompt Warrior**  
+- **Lead Developer:** Mayank Joshi  
+- **Submission:** Build with AI 2026 Hackathon (hack2skill.com)
+
+---
+**License:** [MIT](LICENSE)

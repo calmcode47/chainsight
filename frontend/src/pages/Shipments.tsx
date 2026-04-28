@@ -151,7 +151,7 @@ const Shipments: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight border ${getCargoTypeStyle(shp.cargo_type)}`}>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight border ${getCargoTypeStyle(shp.cargo_type || 'electronics')}`}>
                       {shp.cargo_type}
                     </span>
                   </td>
@@ -216,11 +216,15 @@ const Shipments: React.FC = () => {
                             <div className="bg-white/5 border border-white/5 p-4 rounded-lg space-y-3">
                               <div className="flex justify-between">
                                 <span className="text-xs text-gray-400">Total Value</span>
-                                <span className="text-xs font-bold text-white">${shp.value_usd.toLocaleString()}</span>
+                                <span className="text-xs font-bold text-white">
+                                  {shp.value_usd ? `$${shp.value_usd.toLocaleString()}` : 'N/A'}
+                                </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-xs text-gray-400">Payload Weight</span>
-                                <span className="text-xs font-bold text-white">{shp.weight_kg.toLocaleString()} KG</span>
+                                <span className="text-xs font-bold text-white">
+                                  {shp.weight_kg ? `${shp.weight_kg.toLocaleString()} KG` : 'N/A'}
+                                </span>
                               </div>
                             </div>
                           </div>

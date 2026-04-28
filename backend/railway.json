@@ -1,0 +1,22 @@
+{
+  "//": [
+    "REQUIRED ENVIRONMENT VARIABLES:",
+    "1. SUPABASE_URL - Your Supabase project URL",
+    "2. SUPABASE_SERVICE_KEY - Your Supabase service_role secret key",
+    "3. GEMINI_API_KEY - Your Google Gemini AI API Key",
+    "4. FRONTEND_URL - The URL of your Vercel/production frontend",
+    "5. RAILWAY_ENVIRONMENT - Set to 'production'",
+    "6. PYTHONUNBUFFERED - Set to '1'"
+  ],
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pip install -r requirements.txt"
+  },
+  "deploy": {
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT --workers 2",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3,
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 30
+  }
+}

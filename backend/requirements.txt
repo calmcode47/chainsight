@@ -1,7 +1,10 @@
-fastapi
-uvicorn
-google-generativeai
+supabase==2.29.0
 python-dotenv
+fastapi
+uvicorn[standard]
 pydantic
-httpx
+google-generativeai>=0.8.0
 faker
+PyJWT
+cryptography
+httpx>=0.27.0

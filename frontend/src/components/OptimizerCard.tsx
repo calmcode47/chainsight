@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Shipment, OptimizedRoute } from '../types';
-import { api } from '../api/client';
+import { Shipment, RouteRecommendation } from '../types';
+import { optimizeRoute } from '../api/client';
 import { Sparkles, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 
 interface Props {
@@ -9,15 +9,15 @@ interface Props {
 
 const OptimizerCard: React.FC<Props> = ({ shipment }) => {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<OptimizedRoute | null>(null);
+  const [result, setResult] = useState<RouteRecommendation | null>(null);
 
   const handleOptimize = async () => {
     if (!shipment) return;
     setLoading(true);
     setResult(null);
     try {
-      const res = await api.optimizer.optimize(shipment.id);
-      setResult(res.data);
+      const res = await optimizeRoute(shipment.id);
+      setResult(res);
     } catch (error) {
       console.error("Optimization failed", error);
     } finally {
@@ -55,11 +55,11 @@ const OptimizerCard: React.FC<Props> = ({ shipment }) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-lg">
                 <div className="text-[10px] uppercase font-bold text-green-500 mb-1">Time Saved</div>
-                <div className="text-lg font-bold">{result.estimated_time_saved_hours}h</div>
+                <div className="text-lg font-bold">{result.time_saving_hours}h</div>
               </div>
               <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-lg">
-                <div className="text-[10px] uppercase font-bold text-blue-500 mb-1">Confidence</div>
-                <div className="text-lg font-bold">{(result.confidence_score * 100).toFixed(0)}%</div>
+                <div className="text-[10px] uppercase font-bold text-blue-500 mb-1">Risk Reduction</div>
+                <div className="text-lg font-bold">{(result.risk_reduction_percent).toFixed(0)}%</div>
               </div>
             </div>
 
@@ -70,18 +70,18 @@ const OptimizerCard: React.FC<Props> = ({ shipment }) => {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 text-center">
                   <div className="text-[10px] text-muted-foreground mb-1">Original</div>
-                  <div className="text-xs font-medium line-through decoration-destructive/50">{result.original_route_summary}</div>
+                  <div className="text-xs font-medium line-through decoration-destructive/50">{result.original_route?.summary || 'Standard Path'}</div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 <div className="flex-1 text-center">
                   <div className="text-[10px] text-green-500 font-bold mb-1">Optimized</div>
-                  <div className="text-xs font-bold">{result.optimized_route_summary}</div>
+                  <div className="text-xs font-bold">{result.alternative_route?.summary || 'AI Optimized Route'}</div>
                 </div>
               </div>
             </div>
 
             <div className="text-xs text-muted-foreground leading-relaxed italic bg-card/50 p-3 rounded border border-border/50">
-              "{result.recommendation_reasoning}"
+              "{result.gemini_reasoning}"
             </div>
 
             <button 

@@ -1,0 +1,30 @@
+# supabase/config.toml
+# ChainSight Supabase Project Configuration
+
+project_id = "chainsight-hackathon"
+
+[api]
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+
+[studio]
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://projects-a1f07.web.app"]
+jwt_expiry = 3600
+
+[storage]
+enabled = false
+
+[inbucket]
+port = 54324
+smtp_port = 54325

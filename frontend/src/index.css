@@ -25,6 +25,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+    --radius: 0.5rem;
   }
 }
 
@@ -96,8 +97,18 @@
   animation: ticker 40s linear infinite;
 }
 
+@keyframes route-flow { 
+  to { stroke-dashoffset: -20; } 
+}
+
+.animate-route-flow { 
+  animation: route-flow 2s linear infinite; 
+}
+
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite ease-in-out;
+  transform-origin: center;
+  transform-box: fill-box;
 }
 
 .animate-fade-in {

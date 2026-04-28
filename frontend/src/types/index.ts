@@ -1,26 +1,36 @@
-export interface GeoPoint {
-  lat: number;
-  lng: number;
-  city: string;
-  country: string;
-}
-
 export interface Shipment {
   id: string;
-  origin: GeoPoint;
-  destination: GeoPoint;
-  current_location: GeoPoint;
+  origin: {
+    city: string;
+    country: string;
+    lat: number;
+    lng: number;
+  };
+  destination: {
+    city: string;
+    country: string;
+    lat: number;
+    lng: number;
+  };
+  current_location: {
+    city: string;
+    country: string;
+    lat: number;
+    lng: number;
+  } | null;
   carrier: string;
   mode: 'air' | 'sea' | 'road' | 'rail';
   status: 'on_time' | 'at_risk' | 'delayed' | 'critical';
-  eta: string; // ISO datetime string
+  eta: string;
   progress_percent: number;
-  cargo_type: 'electronics' | 'pharmaceuticals' | 'automotive' | 'perishables' | 'general';
-  weight_kg: number;
-  value_usd: number;
+  cargo_type: string | null;
+  weight_kg: number | null;
+  value_usd: number | null;
   delay_hours: number;
-  disruption_type?: 'weather' | 'port_congestion' | 'customs' | 'mechanical';
-  route_nodes: GeoPoint[];
+  disruption_type: string | null;
+  route_nodes: any[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DisruptionAlert {
@@ -30,19 +40,23 @@ export interface DisruptionAlert {
   type: string;
   description: string;
   detected_at: string;
-  predicted_delay_hours: number;
-  affected_region: string;
+  predicted_delay_hours: number | null;
+  affected_region: string | null;
   ai_confidence: number;
+  resolved: boolean;
+  resolved_at: string | null;
 }
 
 export interface RouteRecommendation {
-  original_route_id: string;
-  alternative_route: GeoPoint[];
+  shipment_id: string;
+  original_route: any;
+  alternative_route: any;
   time_saving_hours: number;
   cost_delta_usd: number;
   risk_reduction_percent: number;
   recommended_carrier: string;
-  reasoning: string;
+  gemini_reasoning: string;
+  created_at?: string;
 }
 
 export interface SupplyChainMetrics {
@@ -52,8 +66,8 @@ export interface SupplyChainMetrics {
   delayed: number;
   critical: number;
   avg_delay_hours: number;
-  disruptions_detected_today: number;
-  routes_optimized_today: number;
+  disruptions_detected: number;
+  routes_optimized: number;
   cost_saved_usd: number;
 }
 

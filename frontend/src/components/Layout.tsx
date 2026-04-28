@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Package, 
@@ -8,44 +8,33 @@ import {
   MessageSquare, 
   Link as LinkIcon,
   Bell,
-  X
+  RefreshCcw,
+  BarChart2,
+  Lock
 } from 'lucide-react';
-import { getDisruptions } from '../api/client';
+import useRealtimeShipments from '../hooks/useRealtimeShipments';
+import RealtimeNotification from './RealtimeNotification';
+import { supabase } from '../lib/supabase';
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC = () => {
   const location = useLocation();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [disruptionCount, setDisruptionCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const { connectionStatus, disruptions, retry } = useRealtimeShipments();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    const fetchDisruptions = async () => {
-      try {
-        const data = await getDisruptions();
-        setDisruptionCount(data.length);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchDisruptions();
-    const alertTimer = setInterval(fetchDisruptions, 15000);
-    
-    return () => {
-      clearInterval(timer);
-      clearInterval(alertTimer);
-    };
+    return () => clearInterval(timer);
   }, []);
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
+    { name: 'Analytics', path: '/analytics', icon: <BarChart2 size={20} /> },
     { name: 'Shipments', path: '/shipments', icon: <Package size={20} /> },
     { name: 'Disruptions', path: '/disruptions', icon: <AlertTriangle size={20} /> },
     { name: 'Optimizer', path: '/optimizer', icon: <Route size={20} /> },
     { name: 'AI Assistant', path: '/assistant', icon: <MessageSquare size={20} /> },
+    { name: 'System Access', path: '/account', icon: <Lock size={20} /> },
   ];
 
   const getPageTitle = () => {
@@ -53,8 +42,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return item ? item.name : 'ChainSight';
   };
 
+  const getStatusConfig = () => {
+    switch (connectionStatus) {
+      case 'connected':
+        return { color: 'bg-green-500', text: 'LIVE', pulse: true };
+      case 'connecting':
+        return { color: 'bg-amber-500', text: 'CONNECTING', pulse: true };
+      case 'disconnected':
+        return { color: 'bg-rose-500', text: 'OFFLINE', pulse: false };
+      default:
+        return { color: 'bg-gray-500', text: 'UNKNOWN', pulse: false };
+    }
+  };
+
+  const status = getStatusConfig();
+
   return (
     <div className="flex h-screen bg-[#0A0F1E] text-white overflow-hidden font-inter relative">
+      {/* Real-time Notifications */}
+      <RealtimeNotification />
+
       {/* Top Animated Border */}
       <div className="absolute top-0 left-0 right-0 h-[3px] animate-top-border z-[100]" />
 
@@ -90,10 +97,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <div className="p-6 border-t border-white/10">
           <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Status</span>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot" />
-              <span className="text-xs font-bold text-green-500 uppercase tracking-tighter">Live Systems</span>
+            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Network Status</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${status.color} ${status.pulse ? 'animate-pulse-dot' : ''}`} />
+                <span className={`text-[10px] font-bold ${status.color.replace('bg-', 'text-')} uppercase tracking-tighter`}>
+                  {status.text}
+                </span>
+              </div>
+              {connectionStatus === 'disconnected' && (
+                <button onClick={retry} className="text-gray-500 hover:text-white transition-colors">
+                  <RefreshCcw size={12} />
+                </button>
+              )}
             </div>
           </div>
           <div className="mt-4 text-[10px] text-gray-500 text-center font-medium italic opacity-50">
@@ -109,19 +125,56 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-[10px] font-mono text-gray-400 bg-white/5 px-3 py-1.5 rounded border border-white/10">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot" />
-              <span>LIVE</span>
+              <div className={`w-2 h-2 rounded-full ${status.color} ${status.pulse ? 'animate-pulse-dot' : ''}`} />
+              <span>{status.text}</span>
               <span className="mx-2 border-l border-white/20 h-3" />
               <span>{currentTime.toLocaleString()}</span>
             </div>
             
             <div className="flex items-center gap-4 border-l border-white/10 pl-6">
-              <div className="relative cursor-pointer hover:text-white transition-colors text-gray-400">
+              <div 
+                className={`relative cursor-pointer transition-colors ${showNotifications ? 'text-blue-500' : 'text-gray-400 hover:text-white'}`}
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
                 <Bell size={18} />
-                {disruptionCount > 0 && (
+                {disruptions.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-[#111827] animate-bounce">
-                    {disruptionCount}
+                    {disruptions.length}
                   </span>
+                )}
+                
+                {/* Notification Dropdown */}
+                {showNotifications && (
+                  <div className="absolute top-10 right-0 w-80 bg-[#111827] border border-white/10 rounded-xl shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-4 border-b border-white/10 flex justify-between items-center">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Live Alerts</h4>
+                      <span className="text-[9px] bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-full font-bold">{disruptions.length} NEW</span>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                      {disruptions.length === 0 ? (
+                        <div className="p-8 text-center text-[10px] text-gray-500 italic">No active disruptions detected.</div>
+                      ) : (
+                        disruptions.slice(0, 5).map((d) => (
+                          <div key={d.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <div className="flex gap-3">
+                              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${d.severity === 'critical' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                              <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-white leading-tight uppercase tracking-tighter">{d.type.replace('_', ' ')}</p>
+                                <p className="text-[10px] text-gray-500 line-clamp-2 leading-snug">{d.description}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <Link 
+                      to="/disruptions" 
+                      onClick={(e) => { e.stopPropagation(); setShowNotifications(false); }}
+                      className="block p-3 text-center text-[10px] font-black text-blue-500 hover:bg-blue-500/5 transition-colors border-t border-white/5 uppercase tracking-widest"
+                    >
+                      Enter Alerts Center →
+                    </Link>
+                  </div>
                 )}
               </div>
               
@@ -140,7 +193,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <main className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#0A0F1E]">
           <div className="max-w-[1600px] mx-auto animate-fade-in">
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>

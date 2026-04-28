@@ -8,7 +8,7 @@ import {
   AlertCircle,
   RefreshCw
 } from 'lucide-react';
-import { chatQuery, getMetrics } from '../api/client';
+import { chatQuery, getMetrics, getShipments } from '../api/client';
 import { ChatMessage, SupplyChainMetrics } from '../types';
 
 const Assistant: React.FC = () => {
@@ -53,7 +53,8 @@ const Assistant: React.FC = () => {
     setError(false);
 
     try {
-      const response = await chatQuery(text, metrics || {});
+      const shipments = await getShipments();
+      const response = await chatQuery(text, { metrics, shipments });
       const assistantMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',

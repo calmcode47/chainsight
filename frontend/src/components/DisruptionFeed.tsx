@@ -1,9 +1,9 @@
 import React from 'react';
-import { Disruption } from '../types';
+import { DisruptionAlert } from '../types';
 import { AlertTriangle, Clock, MapPin } from 'lucide-react';
 
 interface Props {
-  disruptions: Disruption[];
+  disruptions: DisruptionAlert[];
 }
 
 const DisruptionFeed: React.FC<Props> = ({ disruptions }) => {
@@ -20,13 +20,13 @@ const DisruptionFeed: React.FC<Props> = ({ disruptions }) => {
           <div key={dis.id} className="relative pl-6 border-l-2 border-border pb-1 last:pb-0">
             <div className={`
               absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-card
-              ${dis.severity === 'Critical' ? 'bg-destructive' : dis.severity === 'High' ? 'bg-orange-500' : 'bg-yellow-500'}
+              ${dis.severity === 'critical' ? 'bg-destructive' : dis.severity === 'high' ? 'bg-orange-500' : 'bg-yellow-500'}
             `} />
             <div className="flex justify-between items-start mb-1">
               <span className="text-sm font-bold">{dis.type}</span>
               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                 <Clock className="w-3 h-3" />
-                {new Date(dis.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(dis.detected_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mb-2 leading-relaxed">
@@ -34,7 +34,7 @@ const DisruptionFeed: React.FC<Props> = ({ disruptions }) => {
             </p>
             <div className="flex items-center gap-1 text-[10px] font-medium text-primary">
               <MapPin className="w-3 h-3" />
-              {dis.location.name}
+              {dis.affected_region || 'Global'}
             </div>
           </div>
         ))}

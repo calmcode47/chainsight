@@ -13,7 +13,7 @@ import {
   Box,
   Route as RouteIcon
 } from 'lucide-react';
-import { getShipments, optimizeRoute } from '../api/client';
+import { getShipments, optimizeRoute, getBatchOptimizations, acceptOptimization } from '../api/client';
 import { Shipment, RouteRecommendation } from '../types';
 
 const Optimizer: React.FC = () => {
@@ -40,6 +40,39 @@ const Optimizer: React.FC = () => {
       setRecommendation(res);
     } catch (error) {
       console.error("Optimization failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBatchOptimize = async () => {
+    setLoading(true);
+    try {
+      const results = await getBatchOptimizations();
+      setBatchResults(results);
+      // If we have results, maybe select the first one for display
+      if (results.length > 0) {
+        setSelectedId(results[0].shipment_id);
+        setRecommendation(results[0].recommendation);
+      }
+    } catch (error) {
+      console.error("Batch optimization failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAccept = async (rec: RouteRecommendation) => {
+    try {
+      setLoading(true);
+      await acceptOptimization(rec.shipment_id, (rec as any).id || "last_gen");
+      alert(`Route change applied for ${rec.shipment_id}! Status updated.`);
+      // Clear recommendation and refetch shipments
+      setRecommendation(null);
+      const data = await getShipments();
+      setAtRiskShipments(data.filter(s => s.status === 'delayed' || s.status === 'critical'));
+    } catch (error) {
+      console.error("Failed to accept optimization:", error);
     } finally {
       setLoading(false);
     }
@@ -129,17 +162,17 @@ const Optimizer: React.FC = () => {
               <div className="grid grid-cols-2 gap-12 relative py-4">
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/10 -translate-x-1/2" />
                 
-                {/* Original Route */}
+                  {/* Original Route */}
                 <div className="space-y-6 text-right">
                   <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-2">Original Route (Disrupted)</div>
                   <div className="relative pr-6">
                     <XCircle size={14} className="absolute -right-[7px] top-1 text-rose-500 z-10 bg-[#111827]" />
-                    <div className="text-xs font-bold text-white">{selectedShipment?.current_location.city}</div>
+                    <div className="text-xs font-bold text-white">{selectedShipment?.current_location?.city || selectedShipment?.origin.city}</div>
                     <div className="text-[10px] text-gray-500">Current Bottleneck</div>
                   </div>
                   <div className="relative pr-6">
                     <XCircle size={14} className="absolute -right-[7px] top-1 text-rose-500 z-10 bg-[#111827]" />
-                    <div className="text-xs font-bold text-white">Port Alpha Hub</div>
+                    <div className="text-xs font-bold text-white">{selectedShipment?.destination.city || "Port Alpha Hub"}</div>
                     <div className="text-[10px] text-gray-500">Congestion: 48h+</div>
                   </div>
                 </div>
@@ -149,12 +182,12 @@ const Optimizer: React.FC = () => {
                   <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-2">Optimized Route</div>
                   <div className="relative pl-6">
                     <CheckCircle2 size={14} className="absolute -left-[7px] top-1 text-emerald-500 z-10 bg-[#111827]" />
-                    <div className="text-xs font-bold text-white">{recommendation.alternative_route[0].city}</div>
+                    <div className="text-xs font-bold text-white">{recommendation.alternative_route?.[0]?.city || "Alternative Port"}</div>
                     <div className="text-[10px] text-gray-500">Alternate Gateway</div>
                   </div>
                   <div className="relative pl-6">
                     <CheckCircle2 size={14} className="absolute -left-[7px] top-1 text-emerald-500 z-10 bg-[#111827]" />
-                    <div className="text-xs font-bold text-white">{recommendation.alternative_route[1].city}</div>
+                    <div className="text-xs font-bold text-white">{recommendation.alternative_route?.[1]?.city || recommendation.alternative_route?.[0]?.city || "Final Destination"}</div>
                     <div className="text-[10px] text-gray-500">Clear Transit Path</div>
                   </div>
                 </div>
@@ -189,17 +222,44 @@ const Optimizer: React.FC = () => {
                   <Box size={12} /> Gemini Reasoning
                 </div>
                 <p className="text-xs text-gray-300 italic leading-relaxed">
-                  "{recommendation.reasoning}"
+                  "{recommendation.gemini_reasoning}"
                 </p>
               </div>
 
-              <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/20">
+              <button 
+                onClick={() => handleAccept(recommendation)}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-600/20"
+              >
                 <CheckCircle2 size={18} /> Accept & Apply Route Change
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* BATCH OPTIMIZATION RESULTS */}
+      {batchResults && batchResults.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {batchResults.map((result: any) => (
+            <div 
+              key={result.shipment_id}
+              onClick={() => {
+                setSelectedId(result.shipment_id);
+                setRecommendation(result.recommendation);
+              }}
+              className={`p-4 bg-[#111827] border rounded-lg cursor-pointer transition-all ${selectedId === result.shipment_id ? 'border-blue-500 bg-blue-500/5' : 'border-white/10 hover:border-white/20'}`}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-xs font-mono font-bold text-blue-400">{result.shipment_id}</span>
+                <span className="text-[10px] font-bold text-emerald-500">-{result.recommendation.time_saving_hours}h</span>
+              </div>
+              <p className="text-[10px] text-gray-400 line-clamp-2 italic">
+                "{result.recommendation.gemini_reasoning}"
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* BATCH OPTIMIZATION */}
       <div className="bg-[#111827] border border-white/10 rounded-lg p-6 glass-card">
@@ -208,8 +268,13 @@ const Optimizer: React.FC = () => {
             <h3 className="text-lg font-bold text-white">Multi-Shipment Batch Optimization</h3>
             <p className="text-xs text-gray-500 mt-1">Optimize all delayed and critical shipments in a single computational pass.</p>
           </div>
-          <button className="bg-white text-black font-bold px-6 py-2.5 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-200 transition-colors">
-            <Sparkles size={18} /> Run Batch Optimization
+          <button 
+            onClick={handleBatchOptimize}
+            disabled={loading}
+            className="bg-white text-black font-bold px-6 py-2.5 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            {loading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+            Run Batch Optimization
           </button>
         </div>
       </div>

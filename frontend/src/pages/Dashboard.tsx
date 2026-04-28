@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Package, 
   CheckCircle, 
@@ -15,14 +16,20 @@ import StatusBadge from '../components/StatusBadge';
 import ConfidenceBar from '../components/ConfidenceBar';
 
 const Dashboard: React.FC = () => {
-  const { shipments, metrics, disruptions, loading } = useShipments();
+  const { shipments = [], metrics, disruptions = [], loading } = useShipments();
 
   const sortedShipments = useMemo(() => {
-    const severityMap = { critical: 0, delayed: 1, at_risk: 2, on_time: 3 };
-    return [...shipments].sort((a, b) => severityMap[a.status] - severityMap[b.status]).slice(0, 10);
+    if (!Array.isArray(shipments)) return [];
+    const severityMap: Record<string, number> = { critical: 0, delayed: 1, at_risk: 2, on_time: 3 };
+    return [...shipments].sort((a, b) => {
+      const aSev = severityMap[a?.status || 'on_time'] ?? 4;
+      const bSev = severityMap[b?.status || 'on_time'] ?? 4;
+      return aSev - bSev;
+    }).slice(0, 10);
   }, [shipments]);
 
-  if (loading && !metrics) {
+  // If we are loading and have absolutely no data yet, show skeletons
+  if (loading && shipments.length === 0 && !metrics) {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-4 gap-6">
@@ -55,7 +62,7 @@ const Dashboard: React.FC = () => {
         />
         <MetricCard 
           title="Active Disruptions" 
-          value={metrics?.disruptions_detected_today || 0} 
+          value={metrics?.disruptions_detected || 0} 
           change="+2" 
           changeType="up"
           icon={<AlertTriangle size={20} />} 
@@ -83,6 +90,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         
+
         <div className="relative w-full h-[420px] bg-[#0A0F1E]/50 rounded border border-white/5 overflow-hidden">
           <svg className="absolute inset-0 w-full h-full opacity-10" pointerEvents="none">
             <defs>
@@ -103,12 +111,15 @@ const Dashboard: React.FC = () => {
             </g>
 
             {shipments.slice(0, 8).map((shp) => {
+              if (!shp.origin || !shp.destination) return null;
               const startX = ((shp.origin.lng + 180) / 360) * 1000;
               const startY = ((90 - shp.origin.lat) / 180) * 420;
               const endX = ((shp.destination.lng + 180) / 360) * 1000;
               const endY = ((90 - shp.destination.lat) / 180) * 420;
-              const curX = ((shp.current_location.lng + 180) / 360) * 1000;
-              const curY = ((90 - shp.current_location.lat) / 180) * 420;
+              const curX = (((shp.current_location?.lng ?? shp.origin.lng) + 180) / 360) * 1000;
+              const curY = ((90 - (shp.current_location?.lat ?? shp.origin.lat)) / 180) * 420;
+
+              if (isNaN(startX) || isNaN(startY) || isNaN(endX) || isNaN(endY)) return null;
 
               return (
                 <g key={shp.id}>
@@ -138,7 +149,7 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-6 space-y-4">
           <div className="flex justify-between items-center px-2">
             <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">Critical Shipment Monitor</h3>
-            <button className="text-xs text-[#3B82F6] font-bold hover:underline">Full Fleet View</button>
+            <Link to="/shipments" className="text-xs text-[#3B82F6] font-bold hover:underline">Full Fleet View</Link>
           </div>
           <div className="bg-[#111827] border border-white/10 rounded-lg overflow-hidden glass-card">
             <table className="w-full text-left text-sm">
@@ -154,13 +165,15 @@ const Dashboard: React.FC = () => {
                 {sortedShipments.map((shp) => (
                   <tr key={shp.id} className="hover:bg-white/5 transition-colors group cursor-pointer">
                     <td className="px-6 py-4 font-mono font-bold text-gray-300">{shp.id}</td>
-                    <td className="px-6 py-4 font-medium text-white">{shp.origin.city} → {shp.destination.city}</td>
+                    <td className="px-6 py-4 font-medium text-white">
+                      {shp?.origin?.city || 'Unknown'} → {shp?.destination?.city || 'Unknown'}
+                    </td>
                     <td className="px-6 py-4">
-                      <StatusBadge status={shp.status} />
+                      <StatusBadge status={shp?.status || 'on_time'} />
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <span className={`font-bold ${shp.delay_hours > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
-                        {shp.delay_hours > 0 ? `+${shp.delay_hours}h` : '0h'}
+                      <span className={`font-bold ${(shp?.delay_hours || 0) > 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        {(shp?.delay_hours || 0) > 0 ? `+${shp.delay_hours}h` : '0h'}
                       </span>
                     </td>
                   </tr>
@@ -200,7 +213,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* SECTION 4: Activity Footer */}
+      {/* Activity Footer removed for brevity in this replace, keeping the code structure */}
       <div className="h-10 bg-[#111827] border-y border-white/10 flex items-center overflow-hidden">
         <div className="bg-blue-500 h-full px-4 flex items-center text-[10px] font-bold tracking-widest uppercase z-10 whitespace-nowrap shadow-xl">
           Live Feed
@@ -211,11 +224,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      <style>{`
-        @keyframes route-flow { to { stroke-dashoffset: -20; } }
-        .animate-route-flow { animation: route-flow 2s linear infinite; }
-      `}</style>
+      {/* Animation defined in index.css */}
     </div>
   );
 };
