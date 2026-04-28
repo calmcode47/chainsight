@@ -2,11 +2,13 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Union, Any
 from datetime import datetime
 
+
 class GeoPoint(BaseModel):
     lat: float
     lng: float
     city: str
     country: str
+
 
 class Shipment(BaseModel):
     id: str
@@ -27,6 +29,7 @@ class Shipment(BaseModel):
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
+
 class DisruptionAlert(BaseModel):
     id: str
     shipment_id: str
@@ -40,6 +43,7 @@ class DisruptionAlert(BaseModel):
     resolved: bool = False
     resolved_at: Optional[str] = None
 
+
 class RouteRecommendation(BaseModel):
     shipment_id: str
     original_route: Any
@@ -50,6 +54,7 @@ class RouteRecommendation(BaseModel):
     recommended_carrier: str
     gemini_reasoning: str
     created_at: Optional[str] = None
+
 
 class SupplyChainMetrics(BaseModel):
     total_shipments: int
