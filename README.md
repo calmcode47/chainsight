@@ -125,4 +125,4 @@ pytest tests/ -v
 - **Submission:** Build with AI 2026 Hackathon (hack2skill.com)
 
 ---
-**License:** [MIT](LICENSE)
+
